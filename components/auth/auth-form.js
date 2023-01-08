@@ -1,18 +1,22 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 export default function AuthForm() {
-  const [emailEntered, setEmailEntered] = useState(false);
-  const enteredEmailRef = useRef();
-  const enteredPasswordRef = useRef();
+  const router = useRouter();
+  const [usernameEntered, setUsernameEntered] = useState(false);
+  const [invalidCredentials, setInvalidCredentials] = useState(false);
+  const usernameInputRef = useRef();
+  const passwordInputRef = useRef();
 
   useEffect(() => {
-    enteredEmailRef.current.focus();
+    usernameInputRef.current.focus();
   }, []);
 
   const keyPressHandler = (e) => {
     if (e.key === 'Enter') {
-      setEmailEntered(true);
+      setUsernameEntered(true);
     }
   };
 
@@ -24,19 +28,38 @@ export default function AuthForm() {
     };
   }, []);
 
-  const btnClickedHandler = (e) => {
-    if (emailEntered === false) {
-      setEmailEntered(true);
+  const btnClickedHandler = () => {
+    if (usernameEntered === false) {
+      setUsernameEntered(true);
+    }
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    console.log('Submitted!');
+
+    const enteredUsername = usernameInputRef.current.value;
+    const enteredPassword = passwordInputRef.current.value;
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      username: enteredUsername.toLowerCase(),
+      password: enteredPassword,
+    });
+
+    if (result.error) {
+      setInvalidCredentials(true);
     } else {
-      e.preventDefault();
-      console.log('Submit!');
+      router.push({ pathname: '/', query: { filter: 'all' } }, undefined, {
+        shallow: true,
+      });
     }
   };
 
   return (
-    <section className='flex items-center justify-center min-h-full '>
-      <div className='relative flex flex-col m-6 space-y-10 bg-white shadow-2xl rounded-2xl overflow-hidden md:flex-row md:space-y-0 md:m-0'>
-        <form className='p-6 md:p-20'>
+    <section className='flex items-center justify-center min-h-screen'>
+      <div className='relative flex flex-col m-6 space-y-10 bg-white shadow-2xl shadow-yellow-200 rounded-2xl overflow-hidden border border-yellow-200 md:flex-row md:space-y-0 md:m-0'>
+        <form onSubmit={submitHandler} className='p-6 md:p-20'>
           <h2 className='font-mono mb-5 text-3xl font-bold'>Login</h2>
           <p className='maw-w-sm mb-12 font-sans font-light text-gray-600'>
             Sign in to your account to purchase items or check balance.
@@ -45,20 +68,20 @@ export default function AuthForm() {
             type='text'
             name='username'
             placeholder='Enter your username'
-            ref={enteredEmailRef}
+            ref={usernameInputRef}
             required
             className={`${
-              emailEntered && 'hidden'
+              usernameEntered && 'hidden'
             } w-full p-6 border border-gray-300 rounded-md placeholder:font-sans placeholder:font-light`}
           />
-          {emailEntered && (
+          {usernameEntered && (
             <>
-              <p className='mb-4 pl-6'>{enteredEmailRef.current.value}</p>
+              <p className='mb-4 pl-6'>{usernameInputRef.current.value}</p>
               <input
                 type='password'
                 name='password'
                 placeholder='Enter your password'
-                ref={enteredPasswordRef}
+                ref={passwordInputRef}
                 autoFocus
                 required
                 className={`w-full p-6 border border-gray-300 rounded-md placeholder:font-sans placeholder:font-light`}
@@ -69,21 +92,21 @@ export default function AuthForm() {
           <div className='flex flex-col items-center justify-between mt-6 space-y-6 md:flex-row md:space-y-0'>
             <div className='font-thin text-cyan-700'>Forgot password</div>
             <button
-              type={emailEntered ? 'submit' : 'button'}
+              type={usernameEntered ? 'submit' : 'button'}
               onClick={btnClickedHandler}
               onKeyUp={keyPressHandler}
               className='w-full md:w-auto flex justify-center items-center p-6 space-x-4 font-sans font-bold text-white rounded-md px-9 bg-cyan-700 shadow-cyan-100 hover:bg-opacity-90 shadow-sm hover:shadow-lg border transition hover:-translate-y-0.5 duration-150'
             >
-              <span>{emailEntered ? 'Log in' : 'Next'}</span>
+              <span>{usernameEntered ? 'Log in' : 'Next'}</span>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                class='w-7'
+                className='w-7'
                 viewBox='0 0 24 24'
-                stroke-width='1.5'
+                strokeWidth='1.5'
                 stroke='#ffffff'
                 fill='none'
-                stroke-linecap='round'
-                stroke-linejoin='round'
+                strokeLinecap='round'
+                strokeLinejoin='round'
               >
                 <path stroke='none' d='M0 0h24v24H0z' fill='none' />
                 <line x1='5' y1='12' x2='19' y2='12' />
@@ -92,6 +115,11 @@ export default function AuthForm() {
               </svg>
             </button>
           </div>
+          {invalidCredentials && (
+            <div className='w-full p-2 mt-2 text-center font-semibold bg-red-100 rounded-md'>
+              Invalid Credentials!
+            </div>
+          )}
         </form>
 
         <div className='relative w-96 hidden md:block'>

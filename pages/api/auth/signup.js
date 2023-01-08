@@ -25,7 +25,7 @@ async function handler(req, res) {
 
   const client = await connectDB();
 
-  const usersCollection = client.db().collection('users');
+  const usersCollection = client.db('snack-ordering').collection('users');
 
   const existingUser = await usersCollection.findOne({ username });
 
@@ -57,3 +57,5 @@ async function handler(req, res) {
   });
   client.close();
 }
+
+export default handler;

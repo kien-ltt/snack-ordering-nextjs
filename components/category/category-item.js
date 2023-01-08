@@ -19,7 +19,7 @@ export default function CategoryItem(props) {
     <li>
       <button
         onClick={btnClickedHandler}
-        className={`h-24 w-20 flex flex-col justify-center items-center p-4 space-y-2 rounded-2xl bg-gray-50 border border-gray-200 hover:border-green-600 hover:bg-green-50 focus:bg-green-50 focus:border-green-600`}
+        className={`h-24 w-20 flex flex-col justify-center items-center p-4 space-y-2 rounded-2xl bg-gray-50 border border-gray-200 hover:border-green-600 hover:bg-green-50 focus:bg-green-50 focus:border-green-600 transition duration-200`}
       >
         <Image
           src={props.item.src}

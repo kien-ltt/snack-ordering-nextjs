@@ -13,9 +13,20 @@ module.exports = {
           '30%': { transform: 'scale(1.1)' },
           '50%': { transform: 'scale(1.15)' },
         },
+        slideDown: {
+          from: {
+            opacity: '0',
+            transform: 'translateY(-3rem)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
       },
       animation: {
         bump: 'bump 300ms ease-out',
+        slideDown: 'slideDown 300ms ease-out forwards',
       },
     },
   },

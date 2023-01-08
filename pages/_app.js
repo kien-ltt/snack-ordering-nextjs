@@ -1,12 +1,14 @@
+import { SessionProvider } from 'next-auth/react';
 import Head from 'next/head';
 import Layout from '../components/layout/layout';
 import { CartContextProvider } from '../store/cart-context';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
+  const getLayout = Component.getLayout || ((page) => page);
   return (
-    <CartContextProvider>
-      <Layout>
+    <SessionProvider>
+      <CartContextProvider>
         <Head>
           <title>Food Ordering Tool</title>
           <meta
@@ -19,8 +21,14 @@ export default function App({ Component, pageProps }) {
           />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        <Component {...pageProps} />
-      </Layout>
-    </CartContextProvider>
+        {Component.getLayout ? (
+          getLayout(<Component {...pageProps} />)
+        ) : (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        )}
+      </CartContextProvider>
+    </SessionProvider>
   );
 }

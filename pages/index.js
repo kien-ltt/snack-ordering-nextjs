@@ -43,7 +43,7 @@ export default function Home(props) {
   }
 
   return (
-    <div className='relative'>
+    <div className='relative mt-28'>
       <Category categories={props.categories} />
       {foodItems}
     </div>
