@@ -5,7 +5,7 @@ import { CartContextProvider } from '../store/cart-context';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
-  const getLayout = Component.getLayout || ((page) => page);
+  const getSidebarLayout = Component.getSidebarLayout || ((page) => page);
   return (
     <SessionProvider>
       <CartContextProvider>
@@ -21,8 +21,11 @@ export default function App({ Component, pageProps }) {
           />
           <link rel='icon' href='/favicon.ico' />
         </Head>
-        {Component.getLayout ? (
-          getLayout(<Component {...pageProps} />)
+        {Component.getSidebarLayout ? (
+          getSidebarLayout(
+            <Component {...pageProps} />,
+            Component.sidebarContent
+          )
         ) : (
           <Layout>
             <Component {...pageProps} />
